@@ -4,8 +4,8 @@ import { SessionDBAccess } from '../../../src/data_access/sessionDBAccess.js';
 import { useCaseGraph } from '../../../src/entity/useCaseGraph.js';
 import type { GetProjectSummaryOutputData } from '../../../src/use_case/getProjectSummary/getProjectSummaryOutputData.js';
 import type { SessionData } from '../../../src/types/sessionData.js';
-import type { neighbourMap } from '../../../src/types/neighbourMap.js';
-import type { cleanNode } from '../../../src/types/cleanNode.js';
+import type { neighbourMap } from '../../../src/entity/neighbourMap.js';
+import type { cleanNode } from '../../../src/entity/cleanNode.js';
 
 const genericDBAccess = new SessionDBAccess();
 

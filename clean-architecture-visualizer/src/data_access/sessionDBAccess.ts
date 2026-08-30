@@ -7,8 +7,8 @@ import type {
 import type { useCaseGraph } from '../entity/useCaseGraph.js';
 import type { SessionDBAccessInterface } from '../use_case/gateways/sessionDBAccessInterface.js';
 import { SessionDB } from '../database/sessionDb.js';
-import type { cleanNode } from '../types/cleanNode.js';
-import type { cleanLayer } from '../types/cleanLayer.js';
+import type { cleanNode } from '../entity/cleanNode.js';
+import type { cleanLayer } from '../entity/cleanLayer.js';
 
 export class SessionDBAccess implements SessionDBAccessInterface {
   private readonly db: SessionDB<SessionData>;

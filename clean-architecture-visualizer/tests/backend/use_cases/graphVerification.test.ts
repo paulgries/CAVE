@@ -15,7 +15,7 @@ import { CleanArchAccess } from '../../../src/data_access/cleanArchInfoAccess.js
 import { SessionDBAccess } from '../../../src/data_access/sessionDBAccess.js';
 
 import { useCaseGraph } from '../../../src/entity/useCaseGraph.js';
-import type { cleanNode } from '../../../src/types/cleanNode.ts';
+import type { cleanNode } from '../../../src/entity/cleanNode.ts';
 
 const genericFileAccess = new FileAccess();
 const genericNeighbourAccess = new CleanArchAccess();

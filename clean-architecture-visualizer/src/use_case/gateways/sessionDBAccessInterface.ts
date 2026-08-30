@@ -1,5 +1,5 @@
-import type { cleanNode } from '../types/cleanNode.js';
-import type { cleanLayer } from '../types/cleanLayer.js';
+import type { cleanNode } from '../entity/cleanNode.js';
+import type { cleanLayer } from '../entity/cleanLayer.js';
 import type {
   SessionData,
   FileStorage,
