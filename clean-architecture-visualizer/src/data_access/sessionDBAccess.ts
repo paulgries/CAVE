@@ -7,15 +7,43 @@ import type {
 import type { useCaseGraph } from '../entity/useCaseGraph.js';
 import type { SessionDBAccessInterface } from '../use_case/gateways/sessionDBAccessInterface.js';
 import { SessionDB } from '../database/sessionDb.js';
+import { CollectionRepository } from './collectionRepository.js';
 import type { cleanNode } from '../entity/cleanNode.js';
 import type { cleanLayer } from '../entity/cleanLayer.js';
 
+type UseCaseEntry = SessionData['useCases'][number];
+
 export class SessionDBAccess implements SessionDBAccessInterface {
   private readonly db: SessionDB<SessionData>;
+  private readonly useCases = new CollectionRepository<UseCaseEntry>(
+    (uc) => uc.id
+  );
+  private readonly files = new CollectionRepository<FileStorage>(
+    (f) => f.filePath
+  );
+  private readonly edges = new CollectionRepository<EdgeStorage>((e) => e.id);
+  private readonly nodes = new CollectionRepository<NodeStorage>((n) => n.id);
 
   constructor() {
     this.db = new SessionDB<SessionData>();
     this.db.load();
+    this.useCases.set(this.db.get('useCases') ?? []);
+    this.files.set(this.db.get('files') ?? []);
+    this.edges.set(this.db.get('edges') ?? []);
+    this.nodes.set(this.db.get('nodes') ?? []);
+  }
+
+  private persistUseCases(): void {
+    this.db.set('useCases', this.useCases.getAll());
+  }
+  private persistFiles(): void {
+    this.db.set('files', this.files.getAll());
+  }
+  private persistEdges(): void {
+    this.db.set('edges', this.edges.getAll());
+  }
+  private persistNodes(): void {
+    this.db.set('nodes', this.nodes.getAll());
   }
 
   // Setters
@@ -35,14 +63,13 @@ export class SessionDBAccess implements SessionDBAccessInterface {
   // Setters - useCases
 
   setUseCases(useCaseList: useCaseGraph[], files: FileStorage[]): void {
-    const existingFiles = this.db.get('files') ?? [];
+    const existingFiles = this.files.getAll();
     const existingFilePaths = new Set(existingFiles.map((f) => f.filePath));
 
     const newFiles = files.filter((f) => !existingFilePaths.has(f.filePath));
-    this.db.set('files', [...existingFiles, ...newFiles]);
+    this.files.set([...existingFiles, ...newFiles]);
 
-    this.db.set(
-      'useCases',
+    this.useCases.set(
       useCaseList.map((useCase, index) => ({
         id: `uc-${index}`,
         name: useCase.getName(),
@@ -52,111 +79,77 @@ export class SessionDBAccess implements SessionDBAccessInterface {
         missingNodes: useCase.getMissingNodes(),
       }))
     );
+
+    this.persistFiles();
+    this.persistUseCases();
   }
 
   /** Append or overwrite a single use-case entry (matched by id). */
-  upsertUseCase(entry: SessionData['useCases'][number]): void {
-    const existing = this.db.get('useCases') ?? [];
-    const idx = existing.findIndex((uc) => uc.id === entry.id);
-
-    const updated =
-      idx === -1
-        ? [...existing, entry]
-        : existing.map((uc) => (uc.id === entry.id ? entry : uc));
-
-    this.db.set('useCases', updated);
+  upsertUseCase(entry: UseCaseEntry): void {
+    this.useCases.upsert(entry);
+    this.persistUseCases();
   }
 
   removeUseCase(id: string): void {
-    const existing = this.db.get('useCases') ?? [];
-    this.db.set(
-      'useCases',
-      existing.filter((uc) => uc.id !== id)
-    );
+    this.useCases.remove(id);
+    this.persistUseCases();
   }
 
   // Setters — files
 
   /** Replace the entire files array. */
   setFiles(files: FileStorage[]): void {
-    this.db.set('files', files);
+    this.files.set(files);
+    this.persistFiles();
   }
 
   /** Insert or overwrite a single file entry matched by filePath. */
   upsertFile(file: FileStorage): void {
-    const existing = this.db.get('files') ?? [];
-    const idx = existing.findIndex((f) => f.filePath === file.filePath);
-
-    const updated =
-      idx === -1
-        ? [...existing, file]
-        : existing.map((f) => (f.filePath === file.filePath ? file : f));
-
-    this.db.set('files', updated);
+    this.files.upsert(file);
+    this.persistFiles();
   }
 
   removeFile(filePath: string): void {
-    const existing = this.db.get('files') ?? [];
-    this.db.set(
-      'files',
-      existing.filter((f) => f.filePath !== filePath)
-    );
+    this.files.remove(filePath);
+    this.persistFiles();
   }
 
   // Setters — edges
 
   /** Replace the entire edges array. */
   setEdges(edges: EdgeStorage[]): void {
-    this.db.set('edges', edges);
+    this.edges.set(edges);
+    this.persistEdges();
   }
 
   /** Insert or overwrite a single edge entry matched by id. */
   upsertEdge(edge: EdgeStorage): void {
-    const existing = this.db.get('edges') ?? [];
-    const idx = existing.findIndex((e) => e.id === edge.id);
-
-    const updated =
-      idx === -1
-        ? [...existing, edge]
-        : existing.map((e) => (e.id === edge.id ? edge : e));
-
-    this.db.set('edges', updated);
+    this.edges.upsert(edge);
+    this.persistEdges();
   }
 
   removeEdge(id: string): void {
-    const existing = this.db.get('edges') ?? [];
-    this.db.set(
-      'edges',
-      existing.filter((e) => e.id !== id)
-    );
+    this.edges.remove(id);
+    this.persistEdges();
   }
 
   // Setters — nodes
 
   /** Replace the entire nodes array. */
   setNodes(nodes: NodeStorage[]): void {
-    this.db.set('nodes', nodes);
+    this.nodes.set(nodes);
+    this.persistNodes();
   }
 
   /** Insert or overwrite a single node entry matched by id. */
   upsertNode(node: NodeStorage): void {
-    const existing = this.db.get('nodes') ?? [];
-    const idx = existing.findIndex((n) => n.id === node.id);
-
-    const updated =
-      idx === -1
-        ? [...existing, node]
-        : existing.map((n) => (n.id === node.id ? node : n));
-
-    this.db.set('nodes', updated);
+    this.nodes.upsert(node);
+    this.persistNodes();
   }
 
   removeNode(id: string): void {
-    const existing = this.db.get('nodes') ?? [];
-    this.db.set(
-      'nodes',
-      existing.filter((n) => n.id !== id)
-    );
+    this.nodes.remove(id);
+    this.persistNodes();
   }
 
   // Getters
@@ -176,16 +169,14 @@ export class SessionDBAccess implements SessionDBAccessInterface {
   // Getters — useCases
 
   getAllUseCases(): SessionData['useCases'] {
-    return this.db.get('useCases') ?? [];
+    return this.useCases.getAll();
   }
 
-  getUseCaseById(id: string): SessionData['useCases'][number] | undefined {
-    return this.db.get('useCases')?.find((uc) => uc.id === id);
+  getUseCaseById(id: string): UseCaseEntry | undefined {
+    return this.useCases.getByKey(id);
   }
 
-  getUseCaseNeighbours(
-    id: string
-  ): SessionData['useCases'][number]['outNeighbours'] | undefined {
+  getUseCaseNeighbours(id: string): UseCaseEntry['outNeighbours'] | undefined {
     return this.getUseCaseById(id)?.outNeighbours;
   }
 
@@ -193,9 +184,7 @@ export class SessionDBAccess implements SessionDBAccessInterface {
     return this.getUseCaseById(id)?.fileKeys;
   }
 
-  getUseCaseViolationEdges(
-    id: string
-  ): SessionData['useCases'][number]['violationEdges'] | undefined {
+  getUseCaseViolationEdges(id: string): UseCaseEntry['violationEdges'] | undefined {
     return this.getUseCaseById(id)?.violationEdges;
   }
 
@@ -206,78 +195,82 @@ export class SessionDBAccess implements SessionDBAccessInterface {
   // Getters — files
 
   getAllFiles(): FileStorage[] {
-    return this.db.get('files') ?? [];
+    return this.files.getAll();
   }
 
   getFileByPath(filePath: string): FileStorage | undefined {
-    return this.db.get('files')?.find((f) => f.filePath === filePath);
+    return this.files.getByKey(filePath);
   }
 
   getFilesByLayer(layer: cleanLayer): FileStorage[] {
-    return this.getAllFiles().filter((f) => f.layer === layer);
+    return this.files.find((f) => f.layer === layer);
   }
 
   getFilesByType(fileType: FileStorage['fileType']): FileStorage[] {
-    return this.getAllFiles().filter((f) => f.fileType === fileType);
+    return this.files.find((f) => f.fileType === fileType);
   }
 
   getFilesByNode(node: cleanNode): FileStorage[] {
-    return this.getAllFiles().filter((f) => f.node === node);
+    return this.files.find((f) => f.node === node);
   }
 
   // Getters — edges
 
   getAllEdges(): EdgeStorage[] {
-    return this.db.get('edges') ?? [];
+    return this.edges.getAll();
   }
 
   getEdgeById(id: string): EdgeStorage | undefined {
-    return this.db.get('edges')?.find((e) => e.id === id);
+    return this.edges.getByKey(id);
   }
 
   getEdgesBySource(source: string): EdgeStorage[] {
-    return this.getAllEdges().filter((e) => e.source === source);
+    return this.edges.find((e) => e.source === source);
   }
 
   getEdgesByTarget(target: string): EdgeStorage[] {
-    return this.getAllEdges().filter((e) => e.target === target);
+    return this.edges.find((e) => e.target === target);
   }
 
   getEdgesByStatus(status: EdgeStorage['status']): EdgeStorage[] {
-    return this.getAllEdges().filter((e) => e.status === status);
+    return this.edges.find((e) => e.status === status);
   }
 
   // Getters — nodes
 
   getAllNodes(): NodeStorage[] {
-    return this.db.get('nodes') ?? [];
+    return this.nodes.getAll();
   }
 
   getNodeById(id: string): NodeStorage | undefined {
-    return this.db.get('nodes')?.find((n) => n.id === id);
+    return this.nodes.getByKey(id);
   }
 
   getNodesByType(type: cleanNode): NodeStorage[] {
-    return this.getAllNodes().filter((n) => n.type === type);
+    return this.nodes.find((n) => n.type === type);
   }
 
   getNodesByLayer(layer: cleanLayer): NodeStorage[] {
-    return this.getAllNodes().filter((n) => n.layer === layer);
+    return this.nodes.find((n) => n.layer === layer);
   }
 
   getNodesByStatus(status: NodeStorage['status']): NodeStorage[] {
-    return this.getAllNodes().filter((n) => n.status === status);
+    return this.nodes.find((n) => n.status === status);
   }
 
   getNodeByFilePath(filePath: string): NodeStorage | undefined {
-    return this.getAllNodes().find((n) => n.filePath === filePath);
+    return this.nodes.findOne((n) => n.filePath === filePath);
   }
 
   getNodeByName(name: string): NodeStorage | undefined {
-    return this.getAllNodes().find((n) => n.name === name);
+    return this.nodes.findOne((n) => n.name === name);
   }
 
   resetDB(): undefined {
+    this.useCases.set([]);
+    this.files.set([]);
+    this.edges.set([]);
+    this.nodes.set([]);
     this.db.clear();
   }
 }
