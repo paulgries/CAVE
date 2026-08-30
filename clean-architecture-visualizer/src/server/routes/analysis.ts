@@ -1,38 +1,11 @@
 import { Router } from 'express';
-import { SessionDBAccess } from '../../data_access/sessionDBAccess.js';
-import { GetProjectSummaryOutputData } from '../../use_case/getProjectSummary/getProjectSummaryOutputData.js';
-import { GetProjectSummaryInteractor } from '../../use_case/getProjectSummary/getProjectSummaryInteractor.js';
-import { GetProjectSummaryController } from '../../interface_adapter/getProjectSummary/getProjectSummaryController.js';
-import { GetProjectSummaryPresenter } from '../../interface_adapter/getProjectSummary/getProjectSummaryPresenter.js';
-import { GetUseCaseInfoInputData } from '../../use_case/getUseCaseInfo/getUseCaseInfoInputData.js';
-import { GetUseCaseInfoInteractor } from '../../use_case/getUseCaseInfo/getUseCaseInfoInteractor.js';
-import { GetUseCaseInfoOutputData } from '../../use_case/getUseCaseInfo/getUseCaseInfoOutputData.js';
-import { GetUseCaseInfoPresenter } from '../../interface_adapter/getUseCaseInfo/getUseCaseInfoPresenter.js';
-import { GetUseCaseInfoController } from '../../interface_adapter/getUseCaseInfo/getUseCaseInfoController.js';
-import { GetViolationsInputData } from '../../use_case/getViolations/GetViolationsInputData.js';
-import { GetViolationsOutputData } from '../../use_case/getViolations/GetViolationsOutputData.js';
-import { GetViolationsInteractor } from '../../use_case/getViolations/GetViolationsInteractor.js';
-import { FileAccess } from '../../data_access/fileAccess.js';
-import { GetViolationsController } from '../../interface_adapter/getViolations/getViolationsController.js';
-import { GetViolationsPresenter } from '../../interface_adapter/getViolations/getViolationsPresenter.js';
-import { GetFilesWithViolationsOutputData } from '../../use_case/getFilesWithViolations/getFilesWithViolationsOutputData.js';
-import { GetFilesWithViolationsInteractor } from '../../use_case/getFilesWithViolations/getFilesWithViolationsInteractor.js';
-import { GetFilesWithViolationsController } from '../../interface_adapter/getFilesWithViolations/getFilesWithViolationsController.js';
-import { GetFilesWithViolationsPresenter } from '../../interface_adapter/getFilesWithViolations/getFilesWithViolationsPresenter.js';
+import { engine } from '../../app/compositionRoot.js';
 
 const router = Router();
 
-const dbAccess = new SessionDBAccess();
-const fileAccess = new FileAccess();
-
-router.get('/analysis/summary', (_req, res) => {
-  const outputData = new GetProjectSummaryOutputData();
-  const interactor = new GetProjectSummaryInteractor(dbAccess, outputData);
-  const controller = new GetProjectSummaryController(interactor);
-  const presenter = new GetProjectSummaryPresenter(outputData);
-
-  controller.execute();
-  const result = presenter.getOutputData();
+router.get('/analysis/summary', async (_req, res) => {
+  await engine.getProjectSummary.run();
+  const result = engine.getProjectSummary.getOutputData();
 
   if (!result) {
     res
@@ -45,18 +18,8 @@ router.get('/analysis/summary', (_req, res) => {
 });
 
 router.get('/analysis/interaction/:id', async (req, res) => {
-  const inputData = new GetUseCaseInfoInputData(req.params.id);
-  const outputData = new GetUseCaseInfoOutputData();
-  const interactor = new GetUseCaseInfoInteractor(
-    dbAccess,
-    inputData,
-    outputData
-  );
-  const controller = new GetUseCaseInfoController(interactor);
-  const presenter = new GetUseCaseInfoPresenter(outputData);
-
-  await controller.execute();
-  const result = presenter.getOutputData();
+  await engine.getUseCaseInfo.run(req.params.id);
+  const result = engine.getUseCaseInfo.getOutputData();
 
   if (!result) {
     res
@@ -69,19 +32,8 @@ router.get('/analysis/interaction/:id', async (req, res) => {
 });
 
 router.get('/analysis/violations/:interactionId', async (req, res) => {
-  const inputData = new GetViolationsInputData(req.params.interactionId);
-  const outputData = new GetViolationsOutputData();
-  const interactor = new GetViolationsInteractor(
-    dbAccess,
-    fileAccess,
-    inputData,
-    outputData
-  );
-  const controller = new GetViolationsController(interactor);
-  const presenter = new GetViolationsPresenter(outputData);
-
-  await controller.execute();
-  const result = presenter.getOutputData();
+  await engine.getViolations.run(req.params.interactionId);
+  const result = engine.getViolations.getOutputData();
   if (!result) {
     res
       .status(404)
@@ -92,14 +44,9 @@ router.get('/analysis/violations/:interactionId', async (req, res) => {
   res.json(result);
 });
 
-router.get('/analysis/files-with-violations', (_req, res) => {
-  const outputData = new GetFilesWithViolationsOutputData();
-  const interactor = new GetFilesWithViolationsInteractor(dbAccess, outputData);
-  const controller = new GetFilesWithViolationsController(interactor);
-  const presenter = new GetFilesWithViolationsPresenter(outputData);
-
-  controller.execute();
-  const result = presenter.getOutputData();
+router.get('/analysis/files-with-violations', async (_req, res) => {
+  await engine.getFilesWithViolations.run();
+  const result = engine.getFilesWithViolations.getOutputData();
 
   res.json(result);
 });

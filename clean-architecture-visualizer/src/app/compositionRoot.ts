@@ -18,3 +18,10 @@ export class CompositionRoot {
     return new Engine({ fileAccess, cleanArchAccess, db });
   }
 }
+
+/**
+ * The single shared Engine. The CLI (`src/app/index.ts`) and the Express routes
+ * (`src/server/routes/*`) consume this same instance, so the in-memory session
+ * DB and all dependencies live in exactly one place.
+ */
+export const engine = new CompositionRoot().build();

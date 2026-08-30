@@ -9,15 +9,15 @@ import {
 } from '@jest/globals';
 
 const serverModulePath = '../../../src/server/server.js';
-const appBuilderModulePath = '../../../src/app/appBuilder.js';
+const engineModulePath = '../../../src/app/engine.js';
 const sessionDBAccessPath = '../../../src/data_access/sessionDBAccess.js';
 
-let AppBuilder: typeof import('../../../src/app/appBuilder.js').AppBuilder;
+let EndProjectUseCase: typeof import('../../../src/app/engine.js').EndProjectUseCase;
 let SessionDBAccess: typeof import('../../../src/data_access/sessionDBAccess.js').SessionDBAccess;
 let mockStopServer: jest.Mock;
 
-describe('AppBuilder runEndProject', () => {
-  let appBuilder: InstanceType<typeof AppBuilder>;
+describe('EndProjectUseCase', () => {
+  let endProject: InstanceType<typeof EndProjectUseCase>;
   let mockDb: { resetDB: jest.Mock };
 
   beforeAll(async () => {
@@ -27,8 +27,8 @@ describe('AppBuilder runEndProject', () => {
       stopServer: jest.fn(async () => undefined),
     }));
 
-    const module = await import(appBuilderModulePath);
-    AppBuilder = module.AppBuilder;
+    const engineModule = await import(engineModulePath);
+    EndProjectUseCase = engineModule.EndProjectUseCase;
 
     const serverModule = await import(serverModulePath);
     mockStopServer = serverModule.stopServer as jest.Mock;
@@ -39,13 +39,12 @@ describe('AppBuilder runEndProject', () => {
 
   beforeEach(() => {
     mockDb = { resetDB: jest.fn() };
-    appBuilder = new AppBuilder();
-    (appBuilder as any).db = mockDb;
+    endProject = new EndProjectUseCase(mockDb as any);
     mockStopServer.mockReset();
   });
 
   it('resets the session database and closes the server', async () => {
-    await appBuilder.runEndProject();
+    await endProject.run();
 
     expect(mockDb.resetDB).toHaveBeenCalledTimes(1);
     expect(mockStopServer).toHaveBeenCalledTimes(1);
@@ -57,10 +56,9 @@ describe('AppBuilder runEndProject', () => {
 
     expect(realDb.getProjectName()).toBe('test-project');
 
-    appBuilder = new AppBuilder();
-    (appBuilder as any).db = realDb;
+    endProject = new EndProjectUseCase(realDb as any);
 
-    await appBuilder.runEndProject();
+    await endProject.run();
 
     expect(realDb.getProjectName()).toBe('');
     expect(mockStopServer).toHaveBeenCalledTimes(1);
@@ -73,26 +71,25 @@ describe('AppBuilder runEndProject', () => {
       return new Promise<void>((resolve) => setTimeout(resolve, 10));
     });
 
-    const promise = appBuilder.runEndProject();
+    const promise = endProject.run();
     expect(stopServerCalled).toBe(true);
     await promise;
   });
 });
 
 describe('Server lifecycle', () => {
-  it('closes the running server when runEndProject is called', async () => {
+  it('closes the running server when endProject is called', async () => {
     jest.resetModules();
     jest.unstable_unmockModule(serverModulePath);
 
     const { startServer } = await import(serverModulePath);
-    const { AppBuilder } = await import(appBuilderModulePath);
+    const { EndProjectUseCase } = await import(engineModulePath);
     const { SessionDBAccess } = await import(sessionDBAccessPath);
 
     const server = await startServer(true);
-    const appBuilder = new AppBuilder();
-    (appBuilder as any).db = new SessionDBAccess();
+    const endProject = new EndProjectUseCase(new SessionDBAccess() as any);
 
-    await appBuilder.runEndProject();
+    await endProject.run();
 
     expect(server.listening).toBe(false);
   });
