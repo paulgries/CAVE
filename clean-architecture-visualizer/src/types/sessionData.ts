@@ -1,6 +1,6 @@
-import type { cleanNode } from './cleanNode.js';
-import type { neighbourMap } from './neighbourMap.js';
-import type { cleanLayer } from './cleanLayer.js';
+import type { cleanNode } from '../entity/cleanNode.js';
+import type { neighbourMap } from '../entity/neighbourMap.js';
+import type { cleanLayer } from '../entity/cleanLayer.js';
 
 export type SessionData = {
   projectName: string;

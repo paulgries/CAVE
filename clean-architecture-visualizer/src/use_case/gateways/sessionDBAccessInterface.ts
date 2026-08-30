@@ -1,12 +1,12 @@
-import type { cleanNode } from '../entity/cleanNode.js';
-import type { cleanLayer } from '../entity/cleanLayer.js';
+import type { cleanNode } from '../../entity/cleanNode.js';
+import type { cleanLayer } from '../../entity/cleanLayer.js';
 import type {
   SessionData,
   FileStorage,
   EdgeStorage,
   NodeStorage,
-} from '../types/sessionData.js';
-import type { useCaseGraph } from '../entity/useCaseGraph.js';
+} from '../../types/sessionData.js';
+import type { useCaseGraph } from '../../entity/useCaseGraph.js';
 
 export interface SessionDBAccessInterface {
   // Setters
