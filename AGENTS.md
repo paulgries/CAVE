@@ -23,11 +23,14 @@ Guidance for autonomous coding agents (ds4) working in this repo.
 - Tests: `npm test` (jest, 13 suites / ~175 tests)
 - Build: `npm run build` (also builds frontend)
 
-## Commits
-- Use **Conventional Commits**: `feat`, `fix`, `refactor`, `build`, `test`, `chore`, `deps`, `docs`.
-- Concise subject; lowercase, no trailing period. Body explains the "why" when it isn't obvious.
-- Show the commit message (subject + body) for approval before committing, unless the user has already explicitly directed the commit.
-- Only commit when explicitly asked. Inspect `git status`, `git diff` before committing; stage only intended files.
+## Git & Commits
+- Branch structure, commit policy, conflict rules, and merge flow live in **`GIT_WORKFLOW.md`** — follow it.
+- Summary of key rules:
+  - Agents never work on or commit to `main`; work on disposable `agent/*` branches; humans own `feature/*` and `main`.
+  - Use **Conventional Commits** (`feat`, `fix`, `refactor`, `build`, `test`, `chore`, `deps`, `docs`); concise lowercase subject, no trailing period; body explains "why".
+  - Commit freely on `agent/*` branches; approval is at the merge gate — anything reaching `feature/*`/`main` is human-reviewed.
+  - Stage only intended files; inspect `git status`, `git diff` before committing.
+  - Never resolve merge/rebase conflicts yourself — stop and report to a human.
 
 ## AI-usage tracking
 - Commit the live session transcript (`conversations/<session>.md`) as the durable record of AI-assisted work; git history is the per-commit record.
