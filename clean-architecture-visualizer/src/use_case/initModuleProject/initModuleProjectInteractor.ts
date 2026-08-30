@@ -1,4 +1,4 @@
-import type { FileAccessInterface } from '../../data_access/fileAccessInterface.js';
+import type { FileAccessInterface } from '../../use_case/gateways/fileAccessInterface.js';
 import type { InitModuleProjectInputBoundary } from './initModuleProjectInputBoundary.js';
 import { InitModuleProjectOutputData } from './initModuleProjectOutputData.js';
 import type { InitModuleProjectInputData } from './initModuleProjectInputData.js';

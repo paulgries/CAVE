@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-import type { FileAccessInterface } from './fileAccessInterface.js';
+import type { FileAccessInterface } from '../use_case/gateways/fileAccessInterface.js';
 
 export class FileAccess implements FileAccessInterface {
   /**

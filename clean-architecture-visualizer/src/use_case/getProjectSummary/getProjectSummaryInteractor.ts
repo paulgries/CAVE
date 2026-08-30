@@ -1,5 +1,5 @@
 import type { GetProjectSummaryInputBoundary } from './getProjectSummaryInputBoundary.js';
-import type { SessionDBAccessInterface } from '../../data_access/sessionDBAccessInterface.js';
+import type { SessionDBAccessInterface } from '../../use_case/gateways/sessionDBAccessInterface.js';
 import type { GetProjectSummaryOutputData } from './getProjectSummaryOutputData.js';
 
 export class GetProjectSummaryInteractor implements GetProjectSummaryInputBoundary {

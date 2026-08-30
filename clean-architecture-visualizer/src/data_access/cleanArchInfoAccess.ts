@@ -1,6 +1,6 @@
 import type { cleanNode } from '../types/cleanNode.js';
 
-import type { CleanArchInfoAccessInterface } from './cleanArchInfoAccessInterface.js';
+import type { CleanArchInfoAccessInterface } from '../use_case/gateways/cleanArchInfoAccessInterface.js';
 
 import cleanNodeInfo from '../database/cleanArchStaticInfo.json' with { type: 'json' };
 

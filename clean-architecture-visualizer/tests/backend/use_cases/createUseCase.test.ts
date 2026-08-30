@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
-import type { FileAccessInterface } from '../../../src/data_access/fileAccessInterface.js';
+import type { FileAccessInterface } from '../../../src/use_case/gateways/fileAccessInterface.js';
 import { CreateUseCaseInputData } from '../../../src/use_case/createUseCase/createUseCaseInputData.js';
 import { CreateUseCaseOutputData } from '../../../src/use_case/createUseCase/createUseCaseOutputData.js';
 import { CreateUseCaseInteractor } from '../../../src/use_case/createUseCase/createUseCaseInteractor.js';

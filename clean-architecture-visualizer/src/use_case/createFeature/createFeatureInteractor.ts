@@ -1,5 +1,5 @@
 import path from 'node:path';
-import type { FileAccessInterface } from '../../data_access/fileAccessInterface.js';
+import type { FileAccessInterface } from '../../use_case/gateways/fileAccessInterface.js';
 import type { CreateFeatureInputBoundary } from './createFeatureInputBoundary.js';
 import type { CreateFeatureInputData } from './createFeatureInputData.js';
 import type { CreateFeatureOutputBoundary } from './createFeatureOutputBoundary.js';

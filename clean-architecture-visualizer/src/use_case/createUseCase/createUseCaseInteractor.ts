@@ -1,5 +1,5 @@
 import path from 'node:path';
-import type { FileAccessInterface } from '../../data_access/fileAccessInterface.js';
+import type { FileAccessInterface } from '../../use_case/gateways/fileAccessInterface.js';
 import type { CreateUseCaseInputBoundary } from './createUseCaseInputBoundary.js';
 import type { CreateUseCaseInputData } from './createUseCaseInputData.js';
 import type { CreateUseCaseOutputBoundary } from './createUseCaseOutputBoundary.js';

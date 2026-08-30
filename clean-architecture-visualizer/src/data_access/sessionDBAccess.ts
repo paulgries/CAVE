@@ -5,7 +5,7 @@ import type {
   NodeStorage,
 } from '../types/sessionData.js';
 import type { useCaseGraph } from '../entity/useCaseGraph.js';
-import type { SessionDBAccessInterface } from './sessionDBAccessInterface.js';
+import type { SessionDBAccessInterface } from '../use_case/gateways/sessionDBAccessInterface.js';
 import { SessionDB } from '../database/sessionDb.js';
 import type { cleanNode } from '../types/cleanNode.js';
 import type { cleanLayer } from '../types/cleanLayer.js';

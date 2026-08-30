@@ -1,5 +1,5 @@
 import type { GetFilesWithViolationsInputBoundary } from './getFilesWithViolationsInputBoundary.js';
-import type { SessionDBAccessInterface } from '../../data_access/sessionDBAccessInterface.js';
+import type { SessionDBAccessInterface } from '../../use_case/gateways/sessionDBAccessInterface.js';
 import type { GetFilesWithViolationsOutputData } from './getFilesWithViolationsOutputData.js';
 
 export class GetFilesWithViolationsInteractor implements GetFilesWithViolationsInputBoundary {

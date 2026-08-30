@@ -1,6 +1,6 @@
-import type { FileAccessInterface } from '../../data_access/fileAccessInterface.js';
-import type { CleanArchInfoAccessInterface } from '../../data_access/cleanArchInfoAccessInterface.js';
-import type { SessionDBAccessInterface } from '../../data_access/sessionDBAccessInterface.js';
+import type { FileAccessInterface } from '../../use_case/gateways/fileAccessInterface.js';
+import type { CleanArchInfoAccessInterface } from '../../use_case/gateways/cleanArchInfoAccessInterface.js';
+import type { SessionDBAccessInterface } from '../../use_case/gateways/sessionDBAccessInterface.js';
 import type { GraphVerificationInputBoundary } from './graphVerificationInputBoundary.js';
 import type { cleanNode } from '../../types/cleanNode.js';
 import { useCaseGraph } from '../../entity/useCaseGraph.js';

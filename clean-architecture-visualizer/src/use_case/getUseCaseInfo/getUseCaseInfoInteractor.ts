@@ -1,4 +1,4 @@
-import type { SessionDBAccessInterface } from '../../data_access/sessionDBAccessInterface.js';
+import type { SessionDBAccessInterface } from '../../use_case/gateways/sessionDBAccessInterface.js';
 import type { cleanLayer } from '../../types/cleanLayer.js';
 import type { cleanNode } from '../../types/cleanNode.js';
 import type { NodeStorage, EdgeStorage } from '../../types/sessionData.js';

@@ -10,7 +10,7 @@ import { GraphVerificationInteractor } from '../../../src/use_case/graphVerifica
 import { GraphVerificationPresenter } from '../../../src/interface_adapter/graphVerification/graphVerificationPresenter.js';
 import { GraphVerificationOutputData } from '../../../src/use_case/graphVerification/graphVerificationOutputData.js';
 import { FileAccess } from '../../../src/data_access/fileAccess.js';
-import type { FileAccessInterface } from '../../../src/data_access/fileAccessInterface.js';
+import type { FileAccessInterface } from '../../../src/use_case/gateways/fileAccessInterface.js';
 import { CleanArchAccess } from '../../../src/data_access/cleanArchInfoAccess.js';
 import { SessionDBAccess } from '../../../src/data_access/sessionDBAccess.js';
 

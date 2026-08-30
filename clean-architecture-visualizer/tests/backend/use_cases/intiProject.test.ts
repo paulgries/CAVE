@@ -1,6 +1,6 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { InitProjectInteractor } from '../../../src/use_case/initProject/initProjectInteractor.js';
-import type { FileAccessInterface } from '../../../src/data_access/fileAccessInterface.js';
+import type { FileAccessInterface } from '../../../src/use_case/gateways/fileAccessInterface.js';
 import type { InitProjectOutputData } from '../../../src/use_case/initProject/initProjectOutputData.js';
 import { InitProjectInputData } from '../../../src/use_case/initProject/initProjectInputData.js';
 
