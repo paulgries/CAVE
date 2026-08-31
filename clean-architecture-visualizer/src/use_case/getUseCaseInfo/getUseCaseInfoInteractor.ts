@@ -1,7 +1,9 @@
 import type { SessionDBAccessInterface } from '../../use_case/gateways/sessionDBAccessInterface.js';
 import type { cleanLayer } from '../../entity/cleanLayer.js';
 import type { cleanNode } from '../../entity/cleanNode.js';
-import type { NodeStorage, EdgeStorage } from '../../types/sessionData.js';
+import type { ProjectNode } from '../../entity/projectNode.js';
+import type { EdgeDescriptor } from '../../entity/edgeDescriptor.js';
+import type { UseCaseRecord } from '../../entity/useCaseRecord.js';
 import type { GetUseCaseInfoInputBoundary } from './getUseCaseInfoInputBoundary.js';
 import type { GetUseCaseInfoInputData } from './getUseCaseInfoInputData.js';
 import type { GetUseCaseInfoOutputData } from './getUseCaseInfoOutputData.js';
@@ -39,7 +41,7 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
 
   async execute(): Promise<void> {
     const id = this.inputData.getInteractionId();
-    const useCase = this.db.getUseCaseById(id);
+    const useCase = this.db.getUseCase(id);
 
     if (!useCase) return;
 
@@ -53,7 +55,7 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
       decoupling: false,
     };
 
-    // const allNodes = this.db.getAllNodes();
+    // const allNodes = this.db.getNodes();
 
     /**
      * Checking for sub use case.
@@ -74,27 +76,14 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
 
   /**
    * Build the node list for a use case.
-   * - VALID / VIOLATION nodes come from NodeStorage entries whose filePath
-   *   is referenced by the use case's fileKeys.
+   * - VALID / VIOLATION nodes come from the use case's file nodes.
    * - MISSING nodes come from the use case's missingNodes list.
    */
-  private buildNodes(
-    useCase: ReturnType<SessionDBAccessInterface['getUseCaseById']> & {}
-  ): UseCaseNodeResponse[] {
+  private buildNodes(useCase: UseCaseRecord): UseCaseNodeResponse[] {
     const result: UseCaseNodeResponse[] = [];
 
     // useCase file keys that correspond to actual files in the DB
-    const fileNodes: NodeStorage[] = [];
-    const allNodes = this.db.getAllNodes();
-
-    for (const fileKey of useCase.fileKeys) {
-      const nodeFromDB = allNodes.find(
-        (n) => n.filePath && n.filePath.includes(fileKey)
-      );
-
-      if (nodeFromDB !== undefined) fileNodes.push(nodeFromDB);
-    }
-
+    const fileNodes = this.db.getNodesForUseCase(useCase.id);
     for (const node of fileNodes) {
       result.push(this.formatNode(node));
     }
@@ -116,17 +105,16 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
   /**
    * Build the edge list for a use case by collecting all source→target
    * pairs present in the use case's outNeighbours map, then looking them
-   * up in EdgeStorage for status information.
+   * up in the edges for status information.
    */
-  private buildEdges(
-    useCase: ReturnType<SessionDBAccessInterface['getUseCaseById']> & {}
-  ): UseCaseEdgeResponse[] {
+  private buildEdges(useCase: UseCaseRecord): UseCaseEdgeResponse[] {
     const result: UseCaseEdgeResponse[] = [];
 
     for (const [source, targets] of Object.entries(useCase.outNeighbours)) {
       for (const target of targets) {
-        const edgeId = `${source}->${target}`;
-        const edge = this.db.getEdgeById(edgeId);
+        const edge = this.db
+          .getEdges()
+          .find((e) => e.source === source && e.target === target);
         if (!edge) continue;
 
         result.push(this.formatEdge(edge));
@@ -136,7 +124,7 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
     return result;
   }
 
-  private formatNodeName(node: NodeStorage): string {
+  private formatNodeName(node: ProjectNode): string {
     // convert from camelCase to PascalCase and add spaces between words
     // e.g. "dataAccessInterface" -> "Data Access Interface"
     const nodeNamePascalCase =
@@ -161,7 +149,7 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
     }
   }
 
-  private formatNode(node: NodeStorage): UseCaseNodeResponse {
+  private formatNode(node: ProjectNode): UseCaseNodeResponse {
     return {
       id: node.type,
       name: node.name ?? this.formatNodeName(node),
@@ -172,12 +160,12 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
     };
   }
 
-  private formatEdge(edge: EdgeStorage): UseCaseEdgeResponse {
+  private formatEdge(edge: EdgeDescriptor): UseCaseEdgeResponse {
     return {
-      id: edge.id,
+      id: `${edge.source}->${edge.target}`,
       source: edge.source,
       target: edge.target,
-      type: edge.type,
+      type: 'DEPENDENCY',
       status: edge.status,
     };
   }

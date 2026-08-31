@@ -6,9 +6,9 @@
 ## Layer File Counts
 
 - `app/` : 3 files
-- `data_access/` : 3 files
+- `data_access/` : 4 files
 - `database/` : 1 files
-- `entity/` : 4 files
+- `entity/` : 7 files
 - `interface_adapter/` : 20 files
 - `server/` : 4 files
 - `types/` : 1 files
@@ -23,6 +23,7 @@ app/
   index
 data_access/
   cleanArchInfoAccess
+  collectionRepository
   fileAccess
   sessionDBAccess
 database/
@@ -30,8 +31,11 @@ database/
 entity/
   cleanLayer
   cleanNode
+  edgeDescriptor
   neighbourMap
+  projectNode
   useCaseGraph
+  useCaseRecord
 interface_adapter/CreateModuleUseCase/
   createModuleUseCaseController
   createModuleUseCasePresenter
@@ -139,8 +143,8 @@ use_case/initProject/
 | from \ to | entity | types | use_case | interface_adapter | data_access | database | server | app |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | entity | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| types | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| use_case | 11 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |
+| types | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| use_case | 16 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | interface_adapter | 0 | 0 | 30 | 0 | 0 | 0 | 0 | 0 |
 | data_access | 4 | 1 | 3 | 0 | 0 | 1 | 0 | 0 |
 | database | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -211,15 +215,21 @@ app/index -> server/startCommand
 data_access/cleanArchInfoAccess -> entity/cleanNode
 data_access/cleanArchInfoAccess -> use_case/gateways/cleanArchInfoAccessInterface
 data_access/fileAccess -> use_case/gateways/fileAccessInterface
+data_access/sessionDBAccess -> data_access/collectionRepository
 data_access/sessionDBAccess -> database/sessionDb
-data_access/sessionDBAccess -> entity/cleanLayer
-data_access/sessionDBAccess -> entity/cleanNode
-data_access/sessionDBAccess -> entity/useCaseGraph
+data_access/sessionDBAccess -> entity/edgeDescriptor
+data_access/sessionDBAccess -> entity/projectNode
+data_access/sessionDBAccess -> entity/useCaseRecord
 data_access/sessionDBAccess -> types/sessionData
 data_access/sessionDBAccess -> use_case/gateways/sessionDBAccessInterface
+entity/edgeDescriptor -> entity/cleanNode
 entity/neighbourMap -> entity/cleanNode
+entity/projectNode -> entity/cleanLayer
+entity/projectNode -> entity/cleanNode
 entity/useCaseGraph -> entity/cleanNode
 entity/useCaseGraph -> entity/neighbourMap
+entity/useCaseRecord -> entity/cleanNode
+entity/useCaseRecord -> entity/neighbourMap
 interface_adapter/createFeature/createFeatureController -> use_case/createFeature/createFeatureInputBoundary
 interface_adapter/createFeature/createFeaturePresenter -> use_case/createFeature/createFeatureOutputBoundary
 interface_adapter/createFeature/createFeaturePresenter -> use_case/createFeature/createFeatureOutputData
@@ -257,7 +267,10 @@ server/server -> server/routes/template
 server/startCommand -> server/server
 types/sessionData -> entity/cleanLayer
 types/sessionData -> entity/cleanNode
+types/sessionData -> entity/edgeDescriptor
 types/sessionData -> entity/neighbourMap
+types/sessionData -> entity/projectNode
+types/sessionData -> entity/useCaseRecord
 use_case/createFeature/createFeatureInteractor -> use_case/createFeature/createFeatureInputBoundary
 use_case/createFeature/createFeatureInteractor -> use_case/createFeature/createFeatureInputData
 use_case/createFeature/createFeatureInteractor -> use_case/createFeature/createFeatureOutputBoundary
@@ -274,10 +287,9 @@ use_case/createUseCase/createUseCaseInteractor -> use_case/createUseCase/createU
 use_case/createUseCase/createUseCaseInteractor -> use_case/createUseCase/createUseCaseOutputData
 use_case/createUseCase/createUseCaseInteractor -> use_case/gateways/fileAccessInterface
 use_case/gateways/cleanArchInfoAccessInterface -> entity/cleanNode
-use_case/gateways/sessionDBAccessInterface -> entity/cleanLayer
-use_case/gateways/sessionDBAccessInterface -> entity/cleanNode
-use_case/gateways/sessionDBAccessInterface -> entity/useCaseGraph
-use_case/gateways/sessionDBAccessInterface -> types/sessionData
+use_case/gateways/sessionDBAccessInterface -> entity/edgeDescriptor
+use_case/gateways/sessionDBAccessInterface -> entity/projectNode
+use_case/gateways/sessionDBAccessInterface -> entity/useCaseRecord
 use_case/getFilesWithViolations/getFilesWithViolationsInteractor -> use_case/gateways/sessionDBAccessInterface
 use_case/getFilesWithViolations/getFilesWithViolationsInteractor -> use_case/getFilesWithViolations/getFilesWithViolationsInputBoundary
 use_case/getFilesWithViolations/getFilesWithViolationsInteractor -> use_case/getFilesWithViolations/getFilesWithViolationsOutputData
@@ -286,13 +298,14 @@ use_case/getProjectSummary/getProjectSummaryInteractor -> use_case/getProjectSum
 use_case/getProjectSummary/getProjectSummaryInteractor -> use_case/getProjectSummary/getProjectSummaryOutputData
 use_case/getUseCaseInfo/getUseCaseInfoInteractor -> entity/cleanLayer
 use_case/getUseCaseInfo/getUseCaseInfoInteractor -> entity/cleanNode
-use_case/getUseCaseInfo/getUseCaseInfoInteractor -> types/sessionData
+use_case/getUseCaseInfo/getUseCaseInfoInteractor -> entity/edgeDescriptor
+use_case/getUseCaseInfo/getUseCaseInfoInteractor -> entity/projectNode
+use_case/getUseCaseInfo/getUseCaseInfoInteractor -> entity/useCaseRecord
 use_case/getUseCaseInfo/getUseCaseInfoInteractor -> use_case/gateways/sessionDBAccessInterface
 use_case/getUseCaseInfo/getUseCaseInfoInteractor -> use_case/getUseCaseInfo/getUseCaseInfoInputBoundary
 use_case/getUseCaseInfo/getUseCaseInfoInteractor -> use_case/getUseCaseInfo/getUseCaseInfoInputData
 use_case/getUseCaseInfo/getUseCaseInfoInteractor -> use_case/getUseCaseInfo/getUseCaseInfoOutputData
 use_case/getViolations/GetViolationsInteractor -> entity/cleanNode
-use_case/getViolations/GetViolationsInteractor -> entity/useCaseGraph
 use_case/getViolations/GetViolationsInteractor -> use_case/gateways/fileAccessInterface
 use_case/getViolations/GetViolationsInteractor -> use_case/gateways/sessionDBAccessInterface
 use_case/getViolations/GetViolationsInteractor -> use_case/getViolations/GetViolationsInputBoundary
@@ -300,8 +313,10 @@ use_case/getViolations/GetViolationsInteractor -> use_case/getViolations/GetViol
 use_case/getViolations/GetViolationsInteractor -> use_case/getViolations/GetViolationsOutputData
 use_case/graphVerification/graphVerificationInteractor -> entity/cleanLayer
 use_case/graphVerification/graphVerificationInteractor -> entity/cleanNode
+use_case/graphVerification/graphVerificationInteractor -> entity/edgeDescriptor
+use_case/graphVerification/graphVerificationInteractor -> entity/projectNode
 use_case/graphVerification/graphVerificationInteractor -> entity/useCaseGraph
-use_case/graphVerification/graphVerificationInteractor -> types/sessionData
+use_case/graphVerification/graphVerificationInteractor -> entity/useCaseRecord
 use_case/graphVerification/graphVerificationInteractor -> use_case/gateways/cleanArchInfoAccessInterface
 use_case/graphVerification/graphVerificationInteractor -> use_case/gateways/fileAccessInterface
 use_case/graphVerification/graphVerificationInteractor -> use_case/gateways/sessionDBAccessInterface
