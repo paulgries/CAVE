@@ -27,7 +27,7 @@ This section is for getting the app running quickly and making your first change
 2. Install dependencies:
 
    ```bash
-   cd clean-architecture-visualizer/frontend
+   cd apps/web
    npm install
    ```
 
@@ -59,7 +59,7 @@ This will:
 #### Option 2: Run frontend only with mock data (MSW)
 
 ```bash
-cd clean-architecture-visualizer/frontend
+cd apps/web
 npm install
 npm run dev
 ```
@@ -67,7 +67,7 @@ npm run dev
 #### Option 3: Build and preview production output
 
 ```bash
-cd clean-architecture-visualizer/frontend
+cd apps/web
 npm install
 npm run build
 npm run preview
@@ -97,7 +97,7 @@ npm run preview
 
 ### Common pitfalls
 
-- Wrong folder path: run frontend commands from `clean-architecture-visualizer/frontend`, not `cave-docs`.
+- Wrong folder path: run frontend commands from `apps/web`, not `cave-docs`.
 - Missing Playwright setup: run `npm run setup` before the first e2e run on a new machine.
 - Backend mode confusion: use `npm run dev` for mock-data frontend flow and `npm run dev:backend` when you intend to connect to backend mode.
 
@@ -149,10 +149,10 @@ The project uses:
 
 ### Frontend file structure
 
-The frontend app lives in `clean-architecture-visualizer/frontend/src`.
+The frontend app lives in `apps/web/src`.
 
 ```text
-frontend/src/
+apps/web/src/
    actions/     # React Query hooks and action-level data logic
    api/         # API clients and endpoint wrappers
    assets/      # Static assets used by the app
@@ -272,11 +272,11 @@ Notes:
 
 Good examples in this codebase:
 
-- `frontend/src/components/code/CodeViewer/index.tsx` plus `frontend/src/components/code/CodeViewer/styles.ts`
-- `frontend/src/components/code/FileExplorer/index.tsx` plus `frontend/src/components/code/FileExplorer/styles.ts`
-- `frontend/src/components/diagram/ViolationsSideBarContent/index.tsx` plus `frontend/src/components/diagram/ViolationsSideBarContent/styles.ts`
-- `frontend/src/components/diagram/SideBar/index.tsx` plus `frontend/src/components/diagram/SideBar/styles.ts`
-- `frontend/src/pages/CheckerMode/index.tsx` plus `frontend/src/pages/CheckerMode/styles.ts`
+- `apps/web/src/components/code/CodeViewer/index.tsx` plus `apps/web/src/components/code/CodeViewer/styles.ts`
+- `apps/web/src/components/code/FileExplorer/index.tsx` plus `apps/web/src/components/code/FileExplorer/styles.ts`
+- `apps/web/src/components/diagram/ViolationsSideBarContent/index.tsx` plus `apps/web/src/components/diagram/ViolationsSideBarContent/styles.ts`
+- `apps/web/src/components/diagram/SideBar/index.tsx` plus `apps/web/src/components/diagram/SideBar/styles.ts`
+- `apps/web/src/pages/CheckerMode/index.tsx` plus `apps/web/src/pages/CheckerMode/styles.ts`
 
 ### Accessibility
 
@@ -303,18 +303,18 @@ The frontend uses `i18next` with `react-i18next` and currently ships with Englis
 
 #### Where translation files live
 
-- i18n setup: `frontend/src/i18n/config.ts`
-- Locale files: `frontend/src/i18n/locales/en/*.json`
+- i18n setup: `apps/web/src/i18n/config.ts`
+- Locale files: `apps/web/src/i18n/locales/en/*.json`
 - Each JSON file is a namespace (for example: `home.json`, `checker.json`, `common.json`).
 
 #### How to add new translation keys
 
-1. Choose the correct namespace file in `frontend/src/i18n/locales/en`.
+1. Choose the correct namespace file in `apps/web/src/i18n/locales/en`.
 2. Add the key in nested JSON form (group by feature/component).
-3. If you create a brand new namespace file, import it in `frontend/src/i18n/config.ts` and register it in `resources.en`.
+3. If you create a brand new namespace file, import it in `apps/web/src/i18n/config.ts` and register it in `resources.en`.
 4. Use the key from components with `useTranslation('<namespace>')`.
 
-Example JSON (`frontend/src/i18n/locales/en/home.json`):
+Example JSON (`apps/web/src/i18n/locales/en/home.json`):
 
 ```json
 {
@@ -345,7 +345,7 @@ Current codebase patterns:
 
 #### i18n initialization notes
 
-- Ensure `frontend/src/i18n/config.ts` is imported by pages/components that require translations (existing pages already follow this pattern).
+- Ensure `apps/web/src/i18n/config.ts` is imported by pages/components that require translations (existing pages already follow this pattern).
 - `fallbackLng` is set to `en`.
 - Test mode supports `lng=cimode` via query parameter or `VITE_TEST_MODE=true` for deterministic test text behavior.
 

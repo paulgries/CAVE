@@ -1,4 +1,4 @@
-# clean-architecture-visualizer (cave)
+# @cave/backend (cave)
 
 A CLI + web tool for exploring and scaffolding Clean Architecture (CA) projects. It verifies that use cases follow CA layering rules and generates the boilerplate for new use cases, features, and projects.
 
@@ -7,7 +7,7 @@ Built for [CSC207](https://github.com/paulgries/Clean-Architecture-Visualizer) a
 ## Install
 
 ```bash
-npm install -g clean-architecture-visualizer
+npm install -g @cave/backend
 ```
 
 ## Usage

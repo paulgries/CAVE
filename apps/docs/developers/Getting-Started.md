@@ -61,7 +61,7 @@ git push origin main
 ## 3. Navigate into the Project
 
 ```bash
-cd clean-architecture-visualizer
+cd apps/backend
 ```
 
 ## 4. Install Dependencies & Set Up the Project

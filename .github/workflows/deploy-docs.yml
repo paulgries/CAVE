@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'docs/**'
+      - 'apps/docs/**'
 
 jobs:
   deploy:
@@ -21,14 +21,14 @@ jobs:
 
       - name: Install dependencies
         run: yarn install
-        working-directory: docs
+        working-directory: apps/docs
 
       - name: Deploy to GitHub Pages
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           yarn deploy
-        working-directory: docs
+        working-directory: apps/docs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIT_USER: git

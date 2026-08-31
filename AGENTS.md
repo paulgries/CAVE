@@ -9,19 +9,26 @@ Guidance for autonomous coding agents (ds4) working in this repo.
 - Never import Node `fs`, `path`, or `chalk` into `src/use_case/`; define a gateway port instead.
 
 ## Architecture Map (save exploration tokens)
-- `resources/project_structure/backend_structure.md` — auto-generated compact file tree, layer file counts, layer-to-layer dependency matrix, and full file-level import edges for `clean-architecture-visualizer/src`.
+- `resources/project_structure/backend_structure.md` — auto-generated compact file tree, layer file counts, layer-to-layer dependency matrix, and full file-level import edges for `apps/backend/src`.
 - Read it instead of globbing/grepping the tree. Regenerate after refactors:
   `node resources/project_structure/generate_dependency_graph.mjs`
 
-## Backend (clean-architecture-visualizer/)
+## Backend (apps/backend/)
 - `entity/` holds pure domain vocabulary (`cleanNode`, `cleanLayer`, `neighbourMap`, `useCaseGraph`).
 - `types/sessionData.ts` holds persistence DTOs; `data_access/` holds storage implementations.
 - Composition is centralized in `src/app/compositionRoot.ts` + `src/app/engine.ts` (single engine; AppBuilder deleted).
 
+## Workspace Layout (npm workspaces monorepo)
+- Root `package.json` declares `workspaces: ["apps/*", "packages/*"]`; one lockfile at root, hoisted `node_modules`.
+- `apps/backend` (`@cave/backend`): CLI + Express server. `apps/web` (`@cave/web`): React/Vite UI. `apps/docs` (`@cave/docs`): Docusaurus. `packages/`: shared libs (future).
+- Shared tooling lives at the root: `tsconfig.base.json`, `eslint.config.ts` (extends gts), `.prettierrc`.
+- Root scripts delegate to workspaces (`build`, `test`, `lint`, `format`, `typecheck`).
+
 ## Verification
-- Typecheck: `npx tsc --noEmit` (from `clean-architecture-visualizer/`)
+- Typecheck: `npx tsc --noEmit` (from `apps/backend/`)
 - Tests: `npm test` (jest, 13 suites / ~175 tests)
-- Build: `npm run build` (also builds frontend)
+- Build: `npm run build` (backend + web workspaces)
+- Lint: `npm run lint` (gts at root); `npm run format:check` (prettier)
 
 ## Git & Commits
 - Branch structure, commit policy, conflict rules, and merge flow live in **`GIT_WORKFLOW.md`** — follow it.
