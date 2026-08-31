@@ -1,5 +1,4 @@
-import type { cleanNode } from './cleanNode.js';
-import type { cleanLayer } from './cleanLayer.js';
+import type { cleanNode, cleanLayer } from '@cave/shared-domain';
 
 /**
  * A project file and its Clean Architecture classification. The relative

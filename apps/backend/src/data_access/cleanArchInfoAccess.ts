@@ -1,4 +1,4 @@
-import type { cleanNode } from '../entity/cleanNode.js';
+import type { cleanNode } from '@cave/shared-domain';
 
 import type { CleanArchInfoAccessInterface } from '../use_case/gateways/cleanArchInfoAccessInterface.js';
 

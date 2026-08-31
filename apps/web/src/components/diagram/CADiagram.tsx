@@ -13,8 +13,7 @@ import type {
   InteractionDetail,
 } from '../../lib/types';
 import { useInteraction } from '../../actions/useAnalysis';
-import type { cleanNode } from '../../../../src/entity/cleanNode';
-import type { cleanLayer } from '../../../../src/entity/cleanLayer';
+import type { cleanNode, cleanLayer } from '@cave/shared-domain';
 
 const componentLayerMap: Record<CAComponentType, CALayer> = {
   Controller: 'InterfaceAdapters',

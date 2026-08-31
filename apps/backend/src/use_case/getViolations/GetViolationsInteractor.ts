@@ -1,6 +1,6 @@
 import type { SessionDBAccessInterface } from '../../use_case/gateways/sessionDBAccessInterface.js';
 import type { FileAccessInterface } from '../../use_case/gateways/fileAccessInterface.js';
-import type { cleanNode } from '../../entity/cleanNode.js';
+import type { cleanNode } from '@cave/shared-domain';
 import type { GetViolationsInputData } from './GetViolationsInputData.js';
 import type { GetViolationsInputBoundary } from './GetViolationsInputBoundary.js';
 import type { GetViolationsOutputData } from './GetViolationsOutputData.js';

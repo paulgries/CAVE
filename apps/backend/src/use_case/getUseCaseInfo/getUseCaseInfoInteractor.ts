@@ -1,6 +1,5 @@
 import type { SessionDBAccessInterface } from '../../use_case/gateways/sessionDBAccessInterface.js';
-import type { cleanLayer } from '../../entity/cleanLayer.js';
-import type { cleanNode } from '../../entity/cleanNode.js';
+import type { cleanNode, cleanLayer } from '@cave/shared-domain';
 import type { ProjectNode } from '../../entity/projectNode.js';
 import type { EdgeDescriptor } from '../../entity/edgeDescriptor.js';
 import type { UseCaseRecord } from '../../entity/useCaseRecord.js';

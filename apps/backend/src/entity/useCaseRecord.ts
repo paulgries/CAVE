@@ -1,5 +1,5 @@
 import type { neighbourMap } from './neighbourMap.js';
-import type { cleanNode } from './cleanNode.js';
+import type { cleanNode } from '@cave/shared-domain';
 
 /**
  * A use case in a session, as domain data. Serialized projection of the

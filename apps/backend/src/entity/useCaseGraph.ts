@@ -1,4 +1,4 @@
-import type { cleanNode } from './cleanNode.js';
+import type { cleanNode } from '@cave/shared-domain';
 import type { neighbourMap } from './neighbourMap.js';
 
 export class useCaseGraph {

@@ -2,9 +2,8 @@ import type { FileAccessInterface } from '../../use_case/gateways/fileAccessInte
 import type { CleanArchInfoAccessInterface } from '../../use_case/gateways/cleanArchInfoAccessInterface.js';
 import type { SessionDBAccessInterface } from '../../use_case/gateways/sessionDBAccessInterface.js';
 import type { GraphVerificationInputBoundary } from './graphVerificationInputBoundary.js';
-import type { cleanNode } from '../../entity/cleanNode.js';
+import type { cleanNode, cleanLayer } from '@cave/shared-domain';
 import { useCaseGraph } from '../../entity/useCaseGraph.js';
-import type { cleanLayer } from '../../entity/cleanLayer.js';
 import type { ProjectNode } from '../../entity/projectNode.js';
 import type { EdgeDescriptor } from '../../entity/edgeDescriptor.js';
 import type { UseCaseRecord } from '../../entity/useCaseRecord.js';

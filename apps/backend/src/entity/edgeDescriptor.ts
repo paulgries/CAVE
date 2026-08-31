@@ -1,4 +1,4 @@
-import type { cleanNode } from './cleanNode.js';
+import type { cleanNode } from '@cave/shared-domain';
 
 /**
  * A dependency edge between two clean nodes and its verification status.
