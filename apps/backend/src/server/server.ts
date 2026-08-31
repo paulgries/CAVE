@@ -14,11 +14,13 @@ let server: Server | null = null;
 let viteServer: ViteDevServer | null = null;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const frontendPathFromSource = path.resolve(__dirname, '../../frontend');
-const frontendPathFromDist = path.resolve(__dirname, '../../../frontend');
-const FRONTEND_DIR = fs.existsSync(frontendPathFromSource)
-  ? frontendPathFromSource
-  : frontendPathFromDist;
+const frontendPathFromSource = path.resolve(__dirname, '../../../web');
+const frontendPathFromDist = path.resolve(__dirname, '../../../../web');
+const FRONTEND_DIR =
+  process.env.CAVE_FRONTEND_DIR ??
+  (fs.existsSync(frontendPathFromSource)
+    ? frontendPathFromSource
+    : frontendPathFromDist);
 
 const isProd = process.env.NODE_ENV !== 'development';
 

@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "noEmit": true
-  },
-  "exclude": ["node_modules", "frontend", "dist"],
-  "include": ["src/**/*", "tests/**/*"]
-}

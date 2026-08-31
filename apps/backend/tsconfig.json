@@ -1,26 +1,10 @@
 {
-  "exclude": ["node_modules", "frontend", "dist", "tests"],
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    // File Layout
     "rootDir": ".",
     "outDir": "./dist",
-
-    // Environment Settings
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "target": "esnext",
-    "lib": ["esnext"],
-    "types": ["node", "@types/jest"],
-    "esModuleInterop": true,
-
-    // Other Outputs
-    "sourceMap": true,
-
-    // Recommended Options
-    "strict": true,
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "skipLibCheck": true
+    "types": ["node", "@types/jest"]
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "exclude": ["node_modules", "dist"],
+  "include": ["src/**/*"]
 }

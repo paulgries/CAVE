@@ -14,20 +14,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      react: path.resolve(__dirname, 'node_modules/react'),
-      'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
-      'react-router-dom': path.resolve(
-        __dirname,
-        'node_modules/react-router-dom'
-      ),
-      '@tanstack/react-query': path.resolve(
-        __dirname,
-        'node_modules/@tanstack/react-query'
-      ),
-      '@testing-library/react': path.resolve(
-        __dirname,
-        'node_modules/@testing-library/react'
-      ),
     },
   },
   test: {

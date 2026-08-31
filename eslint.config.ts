@@ -9,18 +9,18 @@ export default [
       '*.min.js',
       '**/.docusaurus/**',
       'eslint.config.ts',
-      'clean-architecture-visualizer/frontend/**',
-      'docs/**',
+      'apps/web/**',
+      'apps/docs/**',
     ],
   },
   ...gts,
   {
     // Point gts's type-aware linting at the backend project that includes
-    // src + tests (tsconfig.json itself excludes tests).
-    files: ['clean-architecture-visualizer/**/*.ts', 'clean-architecture-visualizer/**/*.tsx'],
+    // src + tests (tsconfig.json itself is build-only and excludes tests).
+    files: ['apps/backend/**/*.ts', 'apps/backend/**/*.tsx'],
     languageOptions: {
       parserOptions: {
-        project: './clean-architecture-visualizer/tsconfig.eslint.json',
+        project: './apps/backend/tsconfig.test.json',
       },
     },
   },

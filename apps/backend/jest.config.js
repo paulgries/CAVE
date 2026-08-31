@@ -15,6 +15,6 @@ export default {
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
-  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/frontend/'],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/../web/'],
   modulePathIgnorePatterns: ['<rootDir>/dist'],
 };

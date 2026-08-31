@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
-const SRC = path.resolve(ROOT, 'clean-architecture-visualizer/src');
+const SRC = path.resolve(ROOT, 'apps/backend/src');
 
 const files = [];
 function walk(d) {

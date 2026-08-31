@@ -5,7 +5,7 @@ node_modules/
 dist/
 .docusaurus/
 *.tsbuildinfo
-clean-architecture-visualizer/frontend/public/
+apps/web/public/
 
 # IDE
 .idea/
