@@ -1,4 +1,4 @@
-import js from '@eslint/js';
+import gts from 'gts';
 
 export default [
   {
@@ -8,13 +8,20 @@ export default [
       '**/node_modules/**',
       '*.min.js',
       '**/.docusaurus/**',
+      'eslint.config.ts',
+      'clean-architecture-visualizer/frontend/**',
+      'docs/**',
     ],
   },
-  js.configs.recommended,
+  ...gts,
   {
-    rules: {
-      'no-unused-vars': 'warn',
-      'no-console': 'warn',
+    // Point gts's type-aware linting at the backend project that includes
+    // src + tests (tsconfig.json itself excludes tests).
+    files: ['clean-architecture-visualizer/**/*.ts', 'clean-architecture-visualizer/**/*.tsx'],
+    languageOptions: {
+      parserOptions: {
+        project: './clean-architecture-visualizer/tsconfig.eslint.json',
+      },
     },
   },
 ];
