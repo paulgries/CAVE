@@ -22,7 +22,7 @@ export class GetProjectSummaryInteractor implements GetProjectSummaryInputBounda
   }
 
   formatUseCaseInfo(): { [key: string]: any }[] {
-    return this.db.getAllUseCases().map((uc) => ({
+    return this.db.getUseCases().map((uc) => ({
       id: uc.id,
       name: uc.name,
       violation_count: uc.violationEdges.length,

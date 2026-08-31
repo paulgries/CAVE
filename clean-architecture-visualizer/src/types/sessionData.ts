@@ -1,22 +1,18 @@
 import type { cleanNode } from '../entity/cleanNode.js';
 import type { neighbourMap } from '../entity/neighbourMap.js';
 import type { cleanLayer } from '../entity/cleanLayer.js';
+import type { UseCaseRecord } from '../entity/useCaseRecord.js';
+import type { ProjectNode } from '../entity/projectNode.js';
+import type { EdgeDescriptor } from '../entity/edgeDescriptor.js';
 
 export type SessionData = {
   projectName: string;
   numUseCases: number;
   numViolations: number;
-  useCases: {
-    id: string;
-    name: string;
-    outNeighbours: neighbourMap;
-    fileKeys: string[]; // refers to the files map
-    violationEdges: [cleanNode, cleanNode][];
-    missingNodes: cleanNode[];
-  }[];
+  useCases: UseCaseRecord[];
   files: FileStorage[];
-  edges: EdgeStorage[];
-  nodes: NodeStorage[];
+  edges: EdgeDescriptor[];
+  nodes: ProjectNode[];
 };
 
 export type FileStorage = {
@@ -24,21 +20,4 @@ export type FileStorage = {
   fileType: 'java' | 'python' | 'javascript' | 'typescript' | 'unknown';
   layer: cleanLayer;
   node: cleanNode;
-};
-
-export type EdgeStorage = {
-  id: string;
-  source: string; // Node Name
-  target: string; // Node Name
-  type: 'DEPENDENCY';
-  status: 'VALID' | 'INCORRECT_DEPENDENCY';
-};
-
-export type NodeStorage = {
-  id: string;
-  name?: string;
-  filePath?: string;
-  type: cleanNode;
-  layer: cleanLayer;
-  status: 'VALID' | 'MISSING' | 'VIOLATION';
 };

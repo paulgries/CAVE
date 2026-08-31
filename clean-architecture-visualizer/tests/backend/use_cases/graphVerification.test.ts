@@ -246,8 +246,8 @@ describe('Ensures that populateDatabase correctly populates the database', () =>
       );
       await (interactor as any).populateDatabase();
 
-      const uc0 = dbAccess.getUseCaseById('uc-0');
-      const uc1 = dbAccess.getUseCaseById('uc-1');
+      const uc0 = dbAccess.getUseCase('uc-0');
+      const uc1 = dbAccess.getUseCase('uc-1');
 
       expect(uc0?.name).toBe('empty');
       expect(uc1?.name).toBe('single');
@@ -265,7 +265,7 @@ describe('Ensures that populateDatabase correctly populates the database', () =>
       await (interactor as any).verifyOutNeighbours();
       await (interactor as any).populateDatabase();
 
-      const uc = dbAccess.getUseCaseById('uc-0');
+      const uc = dbAccess.getUseCase('uc-0');
       expect(uc?.violationEdges).toContainEqual(['view', 'entities']);
     });
   });
@@ -284,7 +284,7 @@ describe('Ensures that populateDatabase correctly populates the database', () =>
       await (interactor as any).populateDatabase();
 
       // emptyUseCase has no neighbours so edges should be empty
-      expect(dbAccess.getAllEdges()).toHaveLength(0);
+      expect(dbAccess.getEdges()).toHaveLength(0);
     });
 
     it('marks violation edges as INCORRECT_DEPENDENCY', async () => {
@@ -299,7 +299,9 @@ describe('Ensures that populateDatabase correctly populates the database', () =>
       await (interactor as any).verifyOutNeighbours();
       await (interactor as any).populateDatabase();
 
-      const violationEdge = dbAccess.getEdgeById('view->entities');
+      const violationEdge = dbAccess
+        .getEdges()
+        .find((e) => e.source === 'view' && e.target === 'entities');
       expect(violationEdge?.status).toBe('INCORRECT_DEPENDENCY');
     });
 
@@ -318,7 +320,9 @@ describe('Ensures that populateDatabase correctly populates the database', () =>
       await (interactor as any).verifyOutNeighbours();
       await (interactor as any).populateDatabase();
 
-      const validEdge = dbAccess.getEdgeById('view->viewModel');
+      const validEdge = dbAccess
+        .getEdges()
+        .find((e) => e.source === 'view' && e.target === 'viewModel');
       expect(validEdge?.status).toBe('VALID');
     });
 
@@ -339,8 +343,8 @@ describe('Ensures that populateDatabase correctly populates the database', () =>
       await (interactor as any).populateDatabase();
 
       const edges = dbAccess
-        .getEdgesBySource('view')
-        .filter((e) => e.target === 'viewModel');
+        .getEdges()
+        .filter((e) => e.source === 'view' && e.target === 'viewModel');
       expect(edges).toHaveLength(1);
     });
   });
@@ -800,8 +804,7 @@ describe('Ensures developOutNeighbours maps the files to all of the use cases th
       );
     }
 
-    const fileStorage = (interactor as any).buildFileStorageList(fileMap);
-    const nodeStorage = (interactor as any).buildNodeStorageList(fileStorage);
+    const nodeStorage = (interactor as any).buildProjectNodes();
 
     for (const [_, filePath] of fileMap) {
       expect(nodeStorage).toContainEqual({
@@ -906,8 +909,7 @@ describe('Ensures developOutNeighbours maps the files to all of the use cases th
       );
     }
 
-    const fileStorage = (interactor as any).buildFileStorageList(fileMap);
-    const nodeStorage = (interactor as any).buildNodeStorageList(fileStorage);
+    const nodeStorage = (interactor as any).buildProjectNodes();
 
     for (const [_, filePath] of fileMap) {
       expect(nodeStorage).toContainEqual({
@@ -996,8 +998,7 @@ describe('Ensures developOutNeighbours maps the files to all of the use cases th
       'usecase2Controller.java',
       'root/src/interface_adapter/usecase2/usecase2Controller.java'
     );
-    const fileStorage = (interactor as any).buildFileStorageList(fileMap);
-    const nodeStorage = (interactor as any).buildNodeStorageList(fileStorage);
+    const nodeStorage = (interactor as any).buildProjectNodes();
 
     for (const [_, filePath] of fileMap) {
       expect(nodeStorage).toContainEqual({
@@ -1111,8 +1112,7 @@ describe('Ensures developOutNeighbours maps the files to all of the use cases th
       'usecase2Controller.java',
       'root/src/features/feature2/usecase2/interface_adapter/usecase2Controller.java'
     );
-    const fileStorage = (interactor as any).buildFileStorageList(fileMap);
-    const nodeStorage = (interactor as any).buildNodeStorageList(fileStorage);
+    const nodeStorage = (interactor as any).buildProjectNodes();
 
     for (const [_, filePath] of fileMap) {
       expect(nodeStorage).toContainEqual({
@@ -1242,8 +1242,7 @@ describe('Ensures developOutNeighbours maps the files to all of the use cases th
       );
     }
 
-    const fileStorage = (interactor as any).buildFileStorageList(fileMap);
-    const nodeStorage = (interactor as any).buildNodeStorageList(fileStorage);
+    const nodeStorage = (interactor as any).buildProjectNodes();
 
     for (const [_, filePath] of fileMap) {
       expect(nodeStorage).toContainEqual({
@@ -1348,8 +1347,7 @@ describe('Ensures developOutNeighbours maps the files to all of the use cases th
       );
     }
 
-    const fileStorage = (interactor as any).buildFileStorageList(fileMap);
-    const nodeStorage = (interactor as any).buildNodeStorageList(fileStorage);
+    const nodeStorage = (interactor as any).buildProjectNodes();
 
     for (const [_, filePath] of fileMap) {
       expect(nodeStorage).toContainEqual({
@@ -1518,8 +1516,7 @@ describe('Ensures developOutNeighbours maps the files to all of the use cases th
       );
     }
 
-    const fileStorage = (interactor as any).buildFileStorageList(fileMap);
-    const nodeStorage = (interactor as any).buildNodeStorageList(fileStorage);
+    const nodeStorage = (interactor as any).buildProjectNodes();
 
     for (const [_, filePath] of fileMap) {
       expect(nodeStorage).toContainEqual({
@@ -1678,8 +1675,7 @@ describe('Ensures developOutNeighbours maps the files to all of the use cases th
       );
     }
 
-    const fileStorage = (interactor as any).buildFileStorageList(fileMap);
-    const nodeStorage = (interactor as any).buildNodeStorageList(fileStorage);
+    const nodeStorage = (interactor as any).buildProjectNodes();
 
     for (const [_, filePath] of fileMap) {
       expect(nodeStorage).toContainEqual({
@@ -1838,8 +1834,7 @@ describe('Ensures developOutNeighbours maps the files to all of the use cases th
       );
     }
 
-    const fileStorage = (interactor as any).buildFileStorageList(fileMap);
-    const nodeStorage = (interactor as any).buildNodeStorageList(fileStorage);
+    const nodeStorage = (interactor as any).buildProjectNodes();
 
     for (const [_, filePath] of fileMap) {
       expect(nodeStorage).toContainEqual({

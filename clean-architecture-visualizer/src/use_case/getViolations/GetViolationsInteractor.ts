@@ -4,7 +4,6 @@ import type { cleanNode } from '../../entity/cleanNode.js';
 import type { GetViolationsInputData } from './GetViolationsInputData.js';
 import type { GetViolationsInputBoundary } from './GetViolationsInputBoundary.js';
 import type { GetViolationsOutputData } from './GetViolationsOutputData.js';
-import { useCaseGraph } from '../../entity/useCaseGraph.js';
 
 export type ViolationResponse = {
   violations: ViolationEntry[];
@@ -37,7 +36,7 @@ export class GetViolationsInteractor implements GetViolationsInputBoundary {
   async execute(): Promise<void> {
     const interactionId = this.inputData.getInteractionId();
 
-    const useCase = this.db.getUseCaseById(interactionId);
+    const useCase = this.db.getUseCase(interactionId);
     if (!useCase) return undefined;
     const violations: ViolationEntry[] = await Promise.all(
       useCase.violationEdges.map(async ([from, to], index) => {
@@ -82,7 +81,7 @@ export class GetViolationsInteractor implements GetViolationsInputBoundary {
     const fileKeySet = new Set(fileKeys);
 
     return this.db
-      .getAllNodes()
+      .getNodes()
       .filter(
         (n) =>
           (n.type === from || n.type === to) &&
@@ -110,7 +109,7 @@ export class GetViolationsInteractor implements GetViolationsInputBoundary {
     const fileKeySet = new Set(fileKeys);
     // It is possible for multiple files to have the desired clean node and have the same file structure
     const matchingNodes = this.db
-      .getAllNodes()
+      .getNodes()
       .filter(
         (n) =>
           n.type === from &&

@@ -4,12 +4,10 @@ import type { SessionDBAccessInterface } from '../../use_case/gateways/sessionDB
 import type { GraphVerificationInputBoundary } from './graphVerificationInputBoundary.js';
 import type { cleanNode } from '../../entity/cleanNode.js';
 import { useCaseGraph } from '../../entity/useCaseGraph.js';
-import type {
-  EdgeStorage,
-  FileStorage,
-  NodeStorage,
-} from '../../types/sessionData.js';
 import type { cleanLayer } from '../../entity/cleanLayer.js';
+import type { ProjectNode } from '../../entity/projectNode.js';
+import type { EdgeDescriptor } from '../../entity/edgeDescriptor.js';
+import type { UseCaseRecord } from '../../entity/useCaseRecord.js';
 import { GraphVerificationOutputData } from './graphVerificationOutputData.js';
 import { GraphVerificationInputData } from './graphVerificationInputData.js';
 import type { GraphVerificationOutputBoundary } from './graphVerificationOutputBoundary.js';
@@ -469,47 +467,23 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
   }
 
   /**
-   * Build a list of FileStorage objects from a file path map.
-   * @param fileMap a map of file name to file path.
-   * @returns a list of FileStorage objects.
+   * Build the list of `ProjectNode` domain entities from the scanned file maps
+   * and use case graphs.
    */
-  private buildFileStorageList(fileMap: Map<string, string>): FileStorage[] {
-    const result: FileStorage[] = [];
+  private buildProjectNodes(): ProjectNode[] {
+    const result: ProjectNode[] = [];
+    const seenIds = new Set<string>();
 
-    for (const [, filePath] of fileMap) {
+    // All scanned files with their resolved classification, used for files
+    // that are not linked to any use case.
+    const allFiles: { filePath: string; node: cleanNode; layer: cleanLayer }[] =
+      [];
+    for (const [, filePath] of [...this.internalFilePaths, ...this.externalFilePaths]) {
       const node = this.resolveNode(filePath);
       const layer = this.resolveLayer(filePath);
       if (!node || !layer) continue;
-
-      result.push({
-        filePath,
-        fileType: this.determineFileType(filePath),
-        layer,
-        node,
-      });
+      allFiles.push({ filePath, node, layer });
     }
-
-    return result;
-  }
-
-  /**
-   * Helper function to return the fileType based on the filePath
-   */
-  private determineFileType(
-    filePath: string
-  ): 'java' | 'python' | 'javascript' | 'typescript' | 'unknown' {
-    if (filePath.endsWith('.java')) return 'java';
-    if (filePath.endsWith('.py')) return 'python';
-    if (filePath.endsWith('.js') || filePath.endsWith('.jsx'))
-      return 'javascript';
-    if (filePath.endsWith('.ts') || filePath.endsWith('.tsx'))
-      return 'typescript';
-    return 'unknown';
-  }
-
-  private buildNodeStorageList(files: FileStorage[]): NodeStorage[] {
-    const result: NodeStorage[] = [];
-    const seenIds = new Set<string>();
 
     // Go over every use case graph and every one of its files
     // Add it to the list of nodes
@@ -528,10 +502,7 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
         const nodeType = this.resolveNode(filePath);
         nodeTypesSeen.add(nodeType as cleanNode);
         seenIds.add(filePath);
-        // We get the file name and if it is an external file, we add it to list of files to add later
-        // If it doesn't have the external file yet, set it and move on
-        // If it does, we only change it if it doesn't have a violation yet
-        // If an external file is a violation in at least one use case, we will make it a violation everywhere
+        // If an external file is a violation in at least one use case, we make it a violation everywhere
         result.push({
           id: `${filePath}-${uc.getName()}`,
           filePath: filePath,
@@ -545,12 +516,9 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
         });
       });
 
-      // Make a node storage for all missing nodes
+      // Make a node for all missing nodes
       // Missing nodes aren't imported and don't import anything
-      // Is it missing if the file exists?
       // In this case, a missing node is one that just doesn't appear at all.
-      // If a file has no imports/is not imported, it will appear, just have no edges
-      // Consider the idea that if a node has no imports/is not imported, mark it as a violation
       uc.getMissingNodes().map((missingNode) => {
         if (!nodeTypesSeen.has(missingNode)) {
           result.push({
@@ -563,10 +531,10 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
       });
     });
 
-    // This is what happens if a file exists, but is not linked to a use case
-    // seenIds contain the file paths. If we have seen a filePath, it must belong
-    // to a use case. If not, then it goes in this loop.
-    for (const file of files) {
+    // Files that exist but are not linked to any use case.
+    // seenIds contain the file paths. If we have seen a filePath, it belongs to
+    // a use case; otherwise it goes in this loop.
+    for (const file of allFiles) {
       const id = file.filePath;
       if (seenIds.has(id)) continue;
       seenIds.add(id);
@@ -582,13 +550,14 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
 
     return result;
   }
+
   /**
-   * Build a deduplicated list of EdgeStorage objects from all use case graphs.
-   * Edges that appear in a use case's violationEdges are marked INCORRECT_DEPENDENCY,
+   * Build a deduplicated list of `EdgeDescriptor` domain entities from all use
+   * case graphs. Edges in a use case's violationEdges are INCORRECT_DEPENDENCY,
    * all others are VALID.
    */
-  private buildEdgeStorageList(): EdgeStorage[] {
-    const result: EdgeStorage[] = [];
+  private buildEdgeDescriptors(): EdgeDescriptor[] {
+    const result: EdgeDescriptor[] = [];
     const seenIds = new Set<string>();
 
     for (const uc of this.useCaseGraphList) {
@@ -607,10 +576,8 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
           seenIds.add(id);
 
           result.push({
-            id,
             source: fromNode,
             target: toNode,
-            type: 'DEPENDENCY',
             status: violationSet.has(id) ? 'INCORRECT_DEPENDENCY' : 'VALID',
           });
         }
@@ -655,16 +622,22 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
       violationCount += useCase.getViolationCount();
     });
 
-    const files: FileStorage[] = [
-      ...this.buildFileStorageList(this.internalFilePaths),
-      ...this.buildFileStorageList(this.externalFilePaths),
-    ];
-    const nodes: NodeStorage[] = this.buildNodeStorageList(files);
-    const edges: EdgeStorage[] = this.buildEdgeStorageList();
+    const records: UseCaseRecord[] = this.useCaseGraphList.map(
+      (useCase, index) => ({
+        id: `uc-${index}`,
+        name: useCase.getName(),
+        outNeighbours: useCase.getNeighbourMap(),
+        fileKeys: [...useCase.getFiles().keys()],
+        violationEdges: useCase.getViolationEdges(),
+        missingNodes: useCase.getMissingNodes(),
+      })
+    );
+    const nodes: ProjectNode[] = this.buildProjectNodes();
+    const edges: EdgeDescriptor[] = this.buildEdgeDescriptors();
 
     this.db.setNumUseCases(totalUseCases);
     this.db.setNumViolations(violationCount);
-    this.db.setUseCases(this.useCaseGraphList, files);
+    this.db.setUseCaseRecords(records);
     this.db.setNodes(nodes);
     this.db.setEdges(edges);
     this.db.setProjectName(await this.fileAccess.getProjectName());
