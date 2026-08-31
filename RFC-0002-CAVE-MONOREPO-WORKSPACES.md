@@ -148,6 +148,15 @@ Phase-gated to keep the repo buildable at each step.
 - **Docs subproject:** `docs/` uses `yarn.lock` and Docusaurus; it must adopt the workspace lockfile or be excluded from workspace hoisting if incompatible.
 - **Scope:** this is an architectural change; per `GIT_WORKFLOW.md` it requires maintainer approval and is implemented on a disposable `agent/*` branch, merged by a human.
 
+## Implementation Deviations (from Part II–IV)
+This RFC was implemented on `agent/monorepo-reorg` (PR #16). Pragmatic deviations from the plan:
+- **`apps/docs` is not an npm workspace member.** Docusaurus requires react 19 while `apps/web` uses react 18; a single npm workspace cannot cleanly isolate them. Docs stays a standalone app (own `yarn.lock`, own CI), at `apps/docs/`.
+- **Web react pinned via root `overrides`** (`react`/`react-dom` → `18.3.1`) so npm hoists one copy; the stale lockfile was dropped for a fresh resolve.
+- **Shared eslint config stays `eslint.config.ts`** (not `.mjs`) extending gts for `apps/backend`; `apps/web` keeps its own react-aware `eslint.config.mjs`. A single config for all apps is deferred.
+- **`packages/shared-domain`** (`@cave/shared-domain`) was created and `cleanNode`/`cleanLayer` moved into it; backend and web import it, removing the cross-app source dependency.
+- **`chalk` downgraded to `^4.1.2`** in backend for jest `--experimental-vm-modules` ESM stability.
+- `format:check` and `npm run lint` still report pre-existing violations (tracked separately; not part of this reorg).
+
 ---
 
 # Part VI: Definition of Done
